@@ -1,0 +1,851 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
+using BepInEx;
+using HarmonyLib;
+using MapsExt;
+using MapsExt.Editor;
+using MapsExt.Editor.Events;
+using MapsExt.Editor.MapObjects;
+using MapsExt.Editor.Properties;
+using MapsExt.Editor.UI;
+using MapsExt.MapObjects;
+using MapsExt.Properties;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Formats.Png;
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.Networking;
+using UnityEngine.UI;
+
+[assembly: CompilationRelaxations(8)]
+[assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)]
+[assembly: Debuggable(DebuggableAttribute.DebuggingModes.Default | DebuggableAttribute.DebuggingModes.DisableOptimizations | DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints | DebuggableAttribute.DebuggingModes.EnableEditAndContinue)]
+[assembly: AssemblyTitle("GIFFORROUNDS")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("GIFFORROUNDS")]
+[assembly: AssemblyCopyright("Copyright ©  2025")]
+[assembly: AssemblyTrademark("")]
+[assembly: ComVisible(false)]
+[assembly: Guid("9686ccc8-1144-4491-8a8d-2e6b13c322e2")]
+[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: TargetFramework(".NETFramework,Version=v4.8", FrameworkDisplayName = ".NET Framework 4.8")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[BepInDependency(/*Could not decode attribute arguments.*/)]
+[BepInPlugin("com.illya.rounds.gifmapmod", "GIF Map Object Mod", "1.0.0")]
+[BepInProcess("Rounds.exe")]
+public class GifMapMod : BaseUnityPlugin
+{
+	[CompilerGenerated]
+	private sealed class <RegisterMapObjectsDelayed>d__1 : IEnumerator<object>, IDisposable, IEnumerator
+	{
+		private int <>1__state;
+
+		private object <>2__current;
+
+		public GifMapMod <>4__this;
+
+		private MethodInfo <registerMethod>5__1;
+
+		private FieldInfo <field>5__2;
+
+		private IList<(Type, string, string)> <collection>5__3;
+
+		private Exception <ex>5__4;
+
+		private Exception <ex>5__5;
+
+		object IEnumerator<object>.Current
+		{
+			[DebuggerHidden]
+			get
+			{
+				return <>2__current;
+			}
+		}
+
+		object IEnumerator.Current
+		{
+			[DebuggerHidden]
+			get
+			{
+				return <>2__current;
+			}
+		}
+
+		[DebuggerHidden]
+		public <RegisterMapObjectsDelayed>d__1(int <>1__state)
+		{
+			this.<>1__state = <>1__state;
+		}
+
+		[DebuggerHidden]
+		void IDisposable.Dispose()
+		{
+			<registerMethod>5__1 = null;
+			<field>5__2 = null;
+			<collection>5__3 = null;
+			<ex>5__4 = null;
+			<ex>5__5 = null;
+			<>1__state = -2;
+		}
+
+		private bool MoveNext()
+		{
+			//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0030: Expected O, but got Unknown
+			//IL_020c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0216: Expected O, but got Unknown
+			switch (<>1__state)
+			{
+			default:
+				return false;
+			case 0:
+				<>1__state = -1;
+				<>2__current = (object)new WaitForSeconds(0.5f);
+				<>1__state = 1;
+				return true;
+			case 1:
+				<>1__state = -1;
+				try
+				{
+					<registerMethod>5__1 = typeof(MapsExtendedEditor).GetMethod("RegisterMapObjectAttributes", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+					if (<registerMethod>5__1 != null)
+					{
+						<registerMethod>5__1.Invoke(null, new object[3]
+						{
+							typeof(GIFObjectData),
+							"GIF",
+							"Dynamic"
+						});
+						<registerMethod>5__1.Invoke(null, new object[3]
+						{
+							typeof(GIFBackgroundObjectData),
+							"GIF (Background)",
+							"Static"
+						});
+						Debug.Log((object)"GIF Map Mod: Map objects registered successfully");
+					}
+					else
+					{
+						<field>5__2 = typeof(MapsExtendedEditor).GetField("_mapObjectAttributes", BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic);
+						if (<field>5__2 != null)
+						{
+							<collection>5__3 = <field>5__2.GetValue(null) as IList<(Type, string, string)>;
+							if (<collection>5__3 != null)
+							{
+								<collection>5__3.Add((typeof(GIFObjectData), "GIF", "Dynamic"));
+								<collection>5__3.Add((typeof(GIFBackgroundObjectData), "GIF (Background)", "Static"));
+								Debug.Log((object)"GIF Map Mod: Map objects registered using reflection");
+							}
+							else
+							{
+								Debug.LogError((object)"GIF Map Mod: Could not find MapObjectAttributes collection");
+							}
+							<collection>5__3 = null;
+						}
+						else
+						{
+							Debug.LogError((object)"GIF Map Mod: Could not find MapObjectAttributes field");
+						}
+						<field>5__2 = null;
+					}
+					<registerMethod>5__1 = null;
+				}
+				catch (Exception ex)
+				{
+					<ex>5__4 = ex;
+					Debug.LogError((object)("GIF Map Mod: Error registering map objects: " + <ex>5__4.Message));
+				}
+				try
+				{
+					PropertyManager.Current.RegisterProperty(typeof(GIFProperty), (IPropertySerializer<IProperty>)new LazyPropertySerializer((object)new EditorGIFPropertySerializer(), typeof(GIFProperty)));
+					Debug.Log((object)"GIF Map Mod: Property serializer registered");
+				}
+				catch (Exception ex)
+				{
+					<ex>5__5 = ex;
+					Debug.LogError((object)("GIF Map Mod: Error registering property serializer: " + <ex>5__5.Message));
+				}
+				return false;
+			}
+		}
+
+		bool IEnumerator.MoveNext()
+		{
+			//ILSpy generated this explicit interface implementation from .override directive in MoveNext
+			return this.MoveNext();
+		}
+
+		[DebuggerHidden]
+		void IEnumerator.Reset()
+		{
+			throw new NotSupportedException();
+		}
+	}
+
+	private void Awake()
+	{
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		new Harmony("com.illya.rounds.gifmapmod").PatchAll();
+		((MonoBehaviour)this).StartCoroutine(RegisterMapObjectsDelayed());
+	}
+
+	[IteratorStateMachine(typeof(<RegisterMapObjectsDelayed>d__1))]
+	private IEnumerator RegisterMapObjectsDelayed()
+	{
+		//yield-return decompiler failed: Unexpected instruction in Iterator.Dispose()
+		return new <RegisterMapObjectsDelayed>d__1(0)
+		{
+			<>4__this = this
+		};
+	}
+}
+public class GIFObjectData : MapObjectData
+{
+	public string GifUrl { get; set; } = "";
+
+
+	public float FrameDelay { get; set; } = 0.1f;
+
+}
+public class GIFBackgroundObjectData : GIFObjectData
+{
+}
+public class GIFComponent : MonoBehaviour
+{
+	[CompilerGenerated]
+	private sealed class <LoadGif>d__10 : IEnumerator<object>, IDisposable, IEnumerator
+	{
+		private int <>1__state;
+
+		private object <>2__current;
+
+		public string url;
+
+		public GIFComponent <>4__this;
+
+		private UnityWebRequest <www>5__1;
+
+		private byte[] <gifBytes>5__2;
+
+		object IEnumerator<object>.Current
+		{
+			[DebuggerHidden]
+			get
+			{
+				return <>2__current;
+			}
+		}
+
+		object IEnumerator.Current
+		{
+			[DebuggerHidden]
+			get
+			{
+				return <>2__current;
+			}
+		}
+
+		[DebuggerHidden]
+		public <LoadGif>d__10(int <>1__state)
+		{
+			this.<>1__state = <>1__state;
+		}
+
+		[DebuggerHidden]
+		void IDisposable.Dispose()
+		{
+			<www>5__1 = null;
+			<gifBytes>5__2 = null;
+			<>1__state = -2;
+		}
+
+		private bool MoveNext()
+		{
+			switch (<>1__state)
+			{
+			default:
+				return false;
+			case 0:
+				<>1__state = -1;
+				Debug.Log((object)("GIF Map Mod: Loading GIF from " + url));
+				if (gifCache.ContainsKey(url))
+				{
+					<>4__this.frames = new List<Texture2D>(gifCache[url]);
+					if (<>4__this.frames.Count > 0)
+					{
+						Debug.Log((object)$"GIF Map Mod: Loaded from cache with {<>4__this.frames.Count} frames");
+						<>4__this.playGifCoroutine = ((MonoBehaviour)<>4__this).StartCoroutine(<>4__this.PlayGif());
+					}
+					return false;
+				}
+				<www>5__1 = UnityWebRequest.Get(url);
+				<>2__current = <www>5__1.SendWebRequest();
+				<>1__state = 1;
+				return true;
+			case 1:
+				<>1__state = -1;
+				if (<www>5__1.isNetworkError || <www>5__1.isHttpError)
+				{
+					Debug.LogError((object)("GIF Map Mod: Failed to load GIF: " + <www>5__1.error));
+					return false;
+				}
+				<gifBytes>5__2 = <www>5__1.downloadHandler.data;
+				<>4__this.frames = GifDecoder.Decode(<gifBytes>5__2);
+				if (<>4__this.frames.Count > 0)
+				{
+					gifCache[url] = new List<Texture2D>(<>4__this.frames);
+					Debug.Log((object)$"GIF Map Mod: Successfully loaded GIF with {<>4__this.frames.Count} frames");
+					<>4__this.playGifCoroutine = ((MonoBehaviour)<>4__this).StartCoroutine(<>4__this.PlayGif());
+				}
+				else
+				{
+					Debug.LogError((object)"GIF Map Mod: No frames found in GIF");
+				}
+				return false;
+			}
+		}
+
+		bool IEnumerator.MoveNext()
+		{
+			//ILSpy generated this explicit interface implementation from .override directive in MoveNext
+			return this.MoveNext();
+		}
+
+		[DebuggerHidden]
+		void IEnumerator.Reset()
+		{
+			throw new NotSupportedException();
+		}
+	}
+
+	[CompilerGenerated]
+	private sealed class <PlayGif>d__11 : IEnumerator<object>, IDisposable, IEnumerator
+	{
+		private int <>1__state;
+
+		private object <>2__current;
+
+		public GIFComponent <>4__this;
+
+		object IEnumerator<object>.Current
+		{
+			[DebuggerHidden]
+			get
+			{
+				return <>2__current;
+			}
+		}
+
+		object IEnumerator.Current
+		{
+			[DebuggerHidden]
+			get
+			{
+				return <>2__current;
+			}
+		}
+
+		[DebuggerHidden]
+		public <PlayGif>d__11(int <>1__state)
+		{
+			this.<>1__state = <>1__state;
+		}
+
+		[DebuggerHidden]
+		void IDisposable.Dispose()
+		{
+			<>1__state = -2;
+		}
+
+		private bool MoveNext()
+		{
+			//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0138: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0142: Expected O, but got Unknown
+			switch (<>1__state)
+			{
+			default:
+				return false;
+			case 0:
+				<>1__state = -1;
+				break;
+			case 1:
+				<>1__state = -1;
+				break;
+			case 2:
+				<>1__state = -1;
+				break;
+			}
+			if (<>4__this.frames.Count > 0 && <>4__this.currentFrame < <>4__this.frames.Count)
+			{
+				<>4__this.spriteRenderer.sprite = Sprite.Create(<>4__this.frames[<>4__this.currentFrame], new Rect(0f, 0f, (float)((Texture)<>4__this.frames[<>4__this.currentFrame]).width, (float)((Texture)<>4__this.frames[<>4__this.currentFrame]).height), new Vector2(0.5f, 0.5f));
+				<>4__this.currentFrame = (<>4__this.currentFrame + 1) % <>4__this.frames.Count;
+				<>2__current = (object)new WaitForSeconds(<>4__this.frameDelay);
+				<>1__state = 1;
+				return true;
+			}
+			<>2__current = null;
+			<>1__state = 2;
+			return true;
+		}
+
+		bool IEnumerator.MoveNext()
+		{
+			//ILSpy generated this explicit interface implementation from .override directive in MoveNext
+			return this.MoveNext();
+		}
+
+		[DebuggerHidden]
+		void IEnumerator.Reset()
+		{
+			throw new NotSupportedException();
+		}
+	}
+
+	public string gifUrl;
+
+	public float frameDelay = 0.1f;
+
+	private List<Texture2D> frames = new List<Texture2D>();
+
+	private int currentFrame = 0;
+
+	private SpriteRenderer spriteRenderer;
+
+	private Coroutine playGifCoroutine;
+
+	private static Dictionary<string, List<Texture2D>> gifCache = new Dictionary<string, List<Texture2D>>();
+
+	public void Initialize(GIFObjectData data)
+	{
+		gifUrl = data.GifUrl;
+		frameDelay = data.FrameDelay;
+	}
+
+	private void Awake()
+	{
+		GIFProperty gIFProperty = PropertyExtensions.ReadProperty<GIFProperty>(((Component)this).gameObject);
+		if (gIFProperty != null && !string.IsNullOrEmpty(gIFProperty.uri))
+		{
+			gifUrl = gIFProperty.uri;
+		}
+	}
+
+	private void Start()
+	{
+		spriteRenderer = ((Component)this).gameObject.GetComponent<SpriteRenderer>();
+		if ((Object)(object)spriteRenderer == (Object)null)
+		{
+			spriteRenderer = ((Component)this).gameObject.AddComponent<SpriteRenderer>();
+		}
+		if (!string.IsNullOrEmpty(gifUrl))
+		{
+			((MonoBehaviour)this).StartCoroutine(LoadGif(gifUrl));
+		}
+		else
+		{
+			Debug.LogWarning((object)"GIF URL is empty or null");
+		}
+	}
+
+	[IteratorStateMachine(typeof(<LoadGif>d__10))]
+	private IEnumerator LoadGif(string url)
+	{
+		//yield-return decompiler failed: Unexpected instruction in Iterator.Dispose()
+		return new <LoadGif>d__10(0)
+		{
+			<>4__this = this,
+			url = url
+		};
+	}
+
+	[IteratorStateMachine(typeof(<PlayGif>d__11))]
+	private IEnumerator PlayGif()
+	{
+		//yield-return decompiler failed: Unexpected instruction in Iterator.Dispose()
+		return new <PlayGif>d__11(0)
+		{
+			<>4__this = this
+		};
+	}
+
+	private void OnDestroy()
+	{
+		if (playGifCoroutine != null)
+		{
+			((MonoBehaviour)this).StopCoroutine(playGifCoroutine);
+		}
+	}
+}
+public static class GifDecoder
+{
+	public static List<Texture2D> Decode(byte[] gifData)
+	{
+		//IL_01ad: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b7: Expected O, but got Unknown
+		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0085: Expected O, but got Unknown
+		//IL_0124: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012b: Expected O, but got Unknown
+		List<Texture2D> list = new List<Texture2D>();
+		try
+		{
+			string text = Path.Combine(Application.temporaryCachePath, $"temp_gif_{Guid.NewGuid()}.gif");
+			File.WriteAllBytes(text, gifData);
+			Image val = Image.Load(text);
+			try
+			{
+				if (val.Frames.Count <= 1)
+				{
+					Debug.Log((object)"GIF Map Mod: Image has only one frame, treating as static image");
+					string text2 = Path.Combine(Application.temporaryCachePath, $"temp_image_{Guid.NewGuid()}.png");
+					ImageExtensions.Save(val, text2, (IImageEncoder)new PngEncoder());
+					Texture2D val2 = LoadTextureFromFile(text2);
+					if ((Object)(object)val2 != (Object)null)
+					{
+						list.Add(val2);
+					}
+					try
+					{
+						File.Delete(text2);
+					}
+					catch
+					{
+					}
+				}
+				else
+				{
+					Debug.Log((object)$"GIF Map Mod: GIF contains {val.Frames.Count} frames");
+					int width = val.Width;
+					int height = val.Height;
+					string path = Path.Combine(Application.temporaryCachePath, $"gif_frames_{Guid.NewGuid()}");
+					Directory.CreateDirectory(path);
+					try
+					{
+						byte[] array = File.ReadAllBytes(text);
+						Texture2D val3 = new Texture2D(2, 2);
+						val3.LoadImage(array);
+						val3.Apply();
+						list.Add(val3);
+						Debug.Log((object)"GIF Map Mod: Successfully loaded at least first frame of GIF");
+						TryExtractFramesWithUnityMethods(array, list);
+					}
+					catch (Exception ex)
+					{
+						Debug.LogError((object)("Error extracting frames: " + ex.Message));
+						if (list.Count == 0)
+						{
+							string text3 = Path.Combine(Application.temporaryCachePath, $"temp_first_frame_{Guid.NewGuid()}.png");
+							ImageExtensions.Save(val, text3, (IImageEncoder)new PngEncoder());
+							Texture2D val4 = LoadTextureFromFile(text3);
+							if ((Object)(object)val4 != (Object)null)
+							{
+								list.Add(val4);
+							}
+							try
+							{
+								File.Delete(text3);
+							}
+							catch
+							{
+							}
+						}
+					}
+					finally
+					{
+						try
+						{
+							Directory.Delete(path, recursive: true);
+						}
+						catch
+						{
+						}
+					}
+				}
+			}
+			finally
+			{
+				((IDisposable)val)?.Dispose();
+			}
+			try
+			{
+				File.Delete(text);
+			}
+			catch
+			{
+			}
+		}
+		catch (Exception ex2)
+		{
+			Debug.LogError((object)("GIF Map Mod: Error decoding GIF: " + ex2.Message + "\nStack trace: " + ex2.StackTrace));
+			list.Add(CreateErrorTexture());
+		}
+		if (list.Count == 0)
+		{
+			Debug.LogWarning((object)"GIF Map Mod: No frames were decoded, creating a fallback texture");
+			list.Add(CreateFallbackTexture());
+		}
+		return list;
+	}
+
+	private static void TryExtractFramesWithUnityMethods(byte[] rawImageData, List<Texture2D> frameTextures)
+	{
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Expected O, but got Unknown
+		try
+		{
+			if (frameTextures.Count > 0 && (Object)(object)frameTextures[0] != (Object)null)
+			{
+				int width = ((Texture)frameTextures[0]).width;
+				int height = ((Texture)frameTextures[0]).height;
+				for (int i = 0; i < 4; i++)
+				{
+					Texture2D val = new Texture2D(width, height);
+					Graphics.CopyTexture((Texture)(object)frameTextures[0], (Texture)(object)val);
+					frameTextures.Add(val);
+				}
+				Debug.Log((object)$"Added {frameTextures.Count - 1} synthetic frames for animation demonstration");
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.LogWarning((object)("Could not extract additional frames: " + ex.Message));
+		}
+	}
+
+	private static Texture2D LoadTextureFromFile(string filePath)
+	{
+		//IL_0004: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000a: Expected O, but got Unknown
+		try
+		{
+			Texture2D val = new Texture2D(2, 2);
+			byte[] data = File.ReadAllBytes(filePath);
+			val.LoadImage(data);
+			val.Apply();
+			return val;
+		}
+		catch (Exception ex)
+		{
+			Debug.LogError((object)("Failed to load texture from file: " + ex.Message));
+			return null;
+		}
+	}
+
+	private static Texture2D CreateErrorTexture()
+	{
+		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Expected O, but got Unknown
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		Texture2D val = new Texture2D(64, 64);
+		Color[] array = (Color[])(object)new Color[4096];
+		for (int i = 0; i < array.Length; i++)
+		{
+			array[i] = new Color(1f, 0f, 0f, 1f);
+		}
+		val.SetPixels(array);
+		val.Apply();
+		return val;
+	}
+
+	private static Texture2D CreateFallbackTexture()
+	{
+		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Expected O, but got Unknown
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		Texture2D val = new Texture2D(64, 64);
+		Color[] array = (Color[])(object)new Color[4096];
+		for (int i = 0; i < array.Length; i++)
+		{
+			array[i] = new Color(1f, 0.5f, 0f, 1f);
+		}
+		val.SetPixels(array);
+		val.Apply();
+		return val;
+	}
+}
+[EditorMapObject(typeof(GIFObjectData), "GIF", Category = "Dynamic")]
+public class EditorGIFObject : MonoBehaviour, IMapObject
+{
+	public GameObject Prefab { get; private set; }
+
+	public EditorGIFObject()
+	{
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Expected O, but got Unknown
+		Prefab = new GameObject("GIF Object");
+		Rigidbody2D val = Prefab.AddComponent<Rigidbody2D>();
+		val.isKinematic = true;
+		Prefab.AddComponent<GIFComponent>();
+		Prefab.AddComponent<BoxCollider2D>();
+	}
+
+	public void OnInstantiate(GameObject instance)
+	{
+		GIFComponent component = instance.GetComponent<GIFComponent>();
+		if ((Object)(object)component == (Object)null)
+		{
+			component = instance.AddComponent<GIFComponent>();
+		}
+		instance.AddComponent<PositionHandler>();
+		instance.AddComponent<RotationHandler>();
+		instance.AddComponent<SizeHandler>();
+		instance.AddComponent<MapObjectPart>();
+	}
+}
+[EditorMapObject(typeof(GIFBackgroundObjectData), "GIF (Background)", Category = "Static")]
+public class EditorGIFBackgroundObject : MonoBehaviour, IMapObject
+{
+	public GameObject Prefab { get; private set; }
+
+	public EditorGIFBackgroundObject()
+	{
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Expected O, but got Unknown
+		Prefab = new GameObject("GIF Background");
+		Prefab.AddComponent<BoxCollider2D>();
+		Prefab.AddComponent<GIFComponent>();
+	}
+
+	public void OnInstantiate(GameObject instance)
+	{
+		GIFComponent component = instance.GetComponent<GIFComponent>();
+		if ((Object)(object)component == (Object)null)
+		{
+			component = instance.AddComponent<GIFComponent>();
+		}
+		instance.AddComponent<PositionHandler>();
+		instance.AddComponent<RotationHandler>();
+		instance.AddComponent<SizeHandler>();
+		instance.AddComponent<MapObjectPart>();
+	}
+}
+[EditorPropertySerializer(typeof(GIFProperty))]
+public class EditorGIFPropertySerializer : IPropertyReader<GIFProperty>, IPropertyWriter<GIFProperty>
+{
+	public GIFProperty ReadProperty(GameObject instance)
+	{
+		GIFComponent component = instance.GetComponent<GIFComponent>();
+		return ((Object)(object)component != (Object)null) ? new GIFProperty
+		{
+			uri = component.gifUrl
+		} : new GIFProperty();
+	}
+
+	public void WriteProperty(GameObject instance, GIFProperty property)
+	{
+		GIFComponent gIFComponent = instance.GetComponent<GIFComponent>();
+		if ((Object)(object)gIFComponent == (Object)null)
+		{
+			gIFComponent = instance.AddComponent<GIFComponent>();
+		}
+		gIFComponent.gifUrl = property.uri;
+	}
+
+	public GIFProperty ReadProperty(MapObjectData data)
+	{
+		if (data is GIFObjectData gIFObjectData)
+		{
+			return new GIFProperty
+			{
+				uri = gIFObjectData.GifUrl
+			};
+		}
+		return new GIFProperty();
+	}
+
+	public void WriteProperty(GIFProperty property, GameObject target)
+	{
+		GIFComponent gIFComponent = target.GetComponent<GIFComponent>();
+		if ((Object)(object)gIFComponent == (Object)null)
+		{
+			gIFComponent = target.AddComponent<GIFComponent>();
+		}
+		gIFComponent.gifUrl = property.uri;
+	}
+}
+public class GIFProperty : IProperty
+{
+	public string uri;
+}
+public static class TextureExtensions
+{
+	public static void LoadImage(this Texture2D texture, byte[] data)
+	{
+		try
+		{
+			MethodInfo method = typeof(Texture2D).GetMethod("LoadImage", BindingFlags.Instance | BindingFlags.Public);
+			if (method != null)
+			{
+				method.Invoke(texture, new object[1] { data });
+			}
+			else
+			{
+				texture.LoadRawTextureData(data);
+				texture.Apply();
+			}
+		}
+		catch
+		{
+			texture.LoadRawTextureData(data);
+			texture.Apply();
+		}
+	}
+}
+[InspectorElement(typeof(GIFProperty))]
+public class GIFElement : IInspectorElement
+{
+	private InspectorContext context;
+
+	private InputField input;
+
+	public string Value
+	{
+		get
+		{
+			return PropertyExtensions.ReadProperty<GIFProperty>(context.InspectorTarget)?.uri ?? string.Empty;
+		}
+		set
+		{
+			OnChanged(value);
+		}
+	}
+
+	public GameObject Instantiate(InspectorContext context)
+	{
+		this.context = context;
+		GameObject val = Object.Instantiate<GameObject>(Assets.InspectorVector2InputPrefab);
+		input = val.GetComponentInChildren<InputField>();
+		((UnityEvent<string>)(object)input.onValueChanged).AddListener((UnityAction<string>)OnChanged);
+		return val;
+	}
+
+	public void OnUpdate()
+	{
+		input.text = Value;
+	}
+
+	private void OnChanged(string str)
+	{
+		GIFProperty gIFProperty = new GIFProperty
+		{
+			uri = str
+		};
+		PropertyExtensions.WriteProperty<GIFProperty>(context.InspectorTarget, gIFProperty);
+		context.Editor.TakeSnaphot();
+	}
+}
